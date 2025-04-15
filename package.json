@@ -25,7 +25,7 @@
     "test": "jest",
     "build": "tsup",
     "check-exports": "attw --pack .",
-    "lint": "eslint --fix .",
+    "lint": "eslint --fix . --ext .ts",
     "ci": "yarn build && yarn check-exports && yarn lint && yarn test",
     "local-release": "changeset version && changeset publish",
     "prepublishOnly": "yarn ci"

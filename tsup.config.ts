@@ -1,9 +1,10 @@
-import { defineConfig } from "tsup";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entryPoints: ["src/index.ts"],
-  format: ["cjs", "esm"],
+  entryPoints: ['src/index.ts'],
+  format: ['cjs', 'esm'],
   dts: true,
-  outDir: "dist",
+  outDir: 'dist',
   clean: true,
 });

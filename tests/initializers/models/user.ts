@@ -8,6 +8,12 @@ import {
   model,
 } from 'mongoose';
 import addressSchema, { AddressInstance, IAddress } from './embedded/address';
+import {
+  toMap,
+  ToMapQueryHelpers,
+  toRecords,
+  ToRecordsQueryHelpers,
+} from '../../../src';
 
 export interface IUser {
   _id: Types.ObjectId;
@@ -33,7 +39,7 @@ export type UserHydratedDocument = HydratedDocument<IUser, IUserDocumentOverride
 
 export type UserModelType = Model<
   IUser,
-  {},
+  ToMapQueryHelpers<UserHydratedDocument> & ToRecordsQueryHelpers<UserHydratedDocument>,
   IUserDocumentOverrides,
   IUserVirtuals,
   UserHydratedDocument
@@ -73,4 +79,9 @@ userSchema.virtual('fullName')
     return `${this.name} ${this.surname}`;
   });
 
-export default model<IUser, UserModelType>('User', userSchema);
+userSchema.plugin(toMap);
+userSchema.plugin(toRecords);
+
+const User = model<IUser, UserModelType>('User', userSchema);
+
+export default User;

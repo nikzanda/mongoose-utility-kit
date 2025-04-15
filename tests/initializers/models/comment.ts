@@ -56,4 +56,6 @@ const commentSchema = new Schema<IComment, CommentModelType>({
 
 commentSchema.index({ user: 1 });
 
-export default model<IComment, CommentModelType>('Comment', commentSchema);
+const Comment = model<IComment, CommentModelType>('Comment', commentSchema);
+
+export default Comment;
