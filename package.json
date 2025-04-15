@@ -1,6 +1,6 @@
 {
   "name": "mongoose-utility-kit",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "A set of utility functions for the Mongoose library",
   "keywords": [
     "mongoose",

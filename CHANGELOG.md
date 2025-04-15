@@ -1,5 +1,11 @@
 # mongoose-utility-kit
 
+## 0.1.0
+
+### Minor Changes
+
+- 9bd9c4c: Added "toMap" and "toRecords" plugins. Added type "ExtractDocType".
+
 ## 0.0.1
 
 ### Patch Changes
