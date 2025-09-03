@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import { HydratedDocument, QueryWithHelpers, Schema } from 'mongoose';
 import { ExtractDocType } from '../types';
 
@@ -6,45 +7,45 @@ import { ExtractDocType } from '../types';
  *
  * @template T The type of the `HydratedDocument`.
  */
-export interface ToMapQueryHelpers<T extends HydratedDocument<any>> {
+export interface ToMapQueryHelpers<RawDocType, HydratedDocType> {
   /**
-   * Converts the query results into a `Map` where the key is the document's _id.
+   * Query helper interface for converting query results into a `Map` keyed by string.
    *
-   * @returns A QueryWithHelpers instance that returns a `Map` of documents.
+   * @template RawDocType - The type representing the raw document as returned by MongoDB.
+   * @template HydratedDocType - The type representing the hydrated Mongoose document.
+   *
+   * @remarks
+   * - The `toMap` method transforms an array of documents returned by a query into a `Map<string, T>`,
+   *   where the key is typically derived from a document property (e.g., `_id` as a string).
+   *
+   * @example
+   * ```typescript
+   * const docsMap = await Model.find().toMap();
+   * // docsMap is a Map<string, HydratedDocType>
+   * ```
    */
-  toMap(): QueryWithHelpers<
-    Map<string, T>,
-    T,
-    ToMapQueryHelpers<T>,
-    ExtractDocType<T>
-  >,
-}
-
-/**
- * Function to transform query results into a `Map`.
- *
- * @template T The type of the `HydratedDocument`.
- * @this QueryWithHelpers instance.
- * @returns The transformed query result as a `Map`.
- */
-function toMap<T extends HydratedDocument<any>>(
-  this: QueryWithHelpers<
-    Map<string, T>,
-    T,
-    ToMapQueryHelpers<T>,
-    ExtractDocType<T>
-  >,
-) {
-  const result = this.transform((docs: any) => {
-    if (!docs) {
-      return new Map();
-    }
-    if (Array.isArray(docs)) {
-      return new Map(docs.map((doc: any) => [doc._id.toString(), doc]));
-    }
-    return new Map([[docs._id.toString(), docs]]);
-  });
-  return result;
+  toMap(
+    this: QueryWithHelpers<HydratedDocType[], HydratedDocType>
+  ): QueryWithHelpers<Map<string, HydratedDocType>, HydratedDocType>;
+  /**
+   * Query helper interface for converting query results into a `Map` keyed by string.
+   *
+   * @template RawDocType - The type representing the raw document as returned by MongoDB.
+   * @template HydratedDocType - The type representing the hydrated Mongoose document.
+   *
+   * @remarks
+   * - The `toMap` method transforms an array of documents returned by a query into a `Map<string, T>`,
+   *   where the key is typically derived from a document property (e.g., `_id` as a string).
+   *
+   * @example
+   * ```typescript
+   * const docsMap = await Model.find().toMap();
+   * // docsMap is a Map<string, RawDocType>
+   * ```
+   */
+  toMap(
+    this: QueryWithHelpers<RawDocType[], HydratedDocType>
+  ): QueryWithHelpers<Map<string, RawDocType>, HydratedDocType>;
 }
 
 /**
@@ -54,10 +55,21 @@ function toMap<T extends HydratedDocument<any>>(
  * @param schema The Mongoose schema to extend.
  */
 const toMapPlugin = <T extends HydratedDocument<any>>(
-  schema: Schema<any, any, any, ToMapQueryHelpers<T>, any, any, any>,
+  schema: Schema<any, any, any, ToMapQueryHelpers<ExtractDocType<T>, T>, any, any, any>,
 ) => {
   // eslint-disable-next-line no-param-reassign
-  schema.query.toMap = toMap;
+  schema.query.toMap = function (this) {
+    const result = this.transform((docs: any) => {
+      if (!docs) {
+        return new Map();
+      }
+      if (Array.isArray(docs)) {
+        return new Map(docs.map((doc: any) => [doc._id.toString(), doc]));
+      }
+      return new Map([[docs._id.toString(), docs]]);
+    });
+    return result;
+  };
 };
 
 export default toMapPlugin;

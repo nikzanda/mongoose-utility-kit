@@ -138,7 +138,7 @@ These plugins provide helper methods for Mongoose queries to transform the resul
 
     type MyModelType = Model<
       IMyModel,
-      ToMapQueryHelpers<MyModelHydratedDocument> & ToRecordsQueryHelpers<MyModelHydratedDocument>,
+      ToMapQueryHelpers<IMyModel, MyModelHydratedDocument> & ToRecordsQueryHelpers<IMyModel, MyModelHydratedDocument>,
       {},
       {},
       MyModelHydratedDocument

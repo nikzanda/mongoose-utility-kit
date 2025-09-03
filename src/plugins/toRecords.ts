@@ -6,49 +6,43 @@ import { ExtractDocType } from '../types';
  *
  * @template T The type of the `HydratedDocument`.
  */
-export interface ToRecordsQueryHelpers<T extends HydratedDocument<any>> {
+export interface ToRecordsQueryHelpers<RawDocType, HydratedDocType> {
   /**
-   * Converts the query results into a record (object) where the key is the document's _id.
+   * Query helpers for transforming query results into a record (object) keyed by document IDs.
    *
-   * @returns A QueryWithHelpers instance that returns a Record of documents.
+   * @template RawDocType - The type representing the raw document as returned by MongoDB.
+   * @template HydratedDocType - The type representing the hydrated Mongoose document.
+   *
+   * Provides overloaded `toRecords` methods for use with Mongoose queries, allowing the result
+   * array to be converted into a record where each key is the document's `_id` (as a string)
+   * and the value is the corresponding document.
+   *
+   * @example
+   * // Usage in a Mongoose query:
+   * const records = await Model.find().toRecords();
+   * // records is of type Record<string, HydratedDocType>
    */
-  toRecords(): QueryWithHelpers<
-    Record<string, T>,
-    T,
-    ToRecordsQueryHelpers<T>,
-    ExtractDocType<T>
-  >,
-}
-
-/**
- * Function to transform query results into a record (object).
- *
- * @template T The type of the `HydratedDocument`.
- * @this QueryWithHelpers instance.
- * @returns The transformed query result as a Record.
- */
-function toRecords<T extends HydratedDocument<any>>(
-  this: QueryWithHelpers<
-    Record<string, T>,
-    T,
-    ToRecordsQueryHelpers<T>,
-    ExtractDocType<T>
-  >,
-) {
-  const result = this.transform((docs: any) => {
-    if (!docs) {
-      return {};
-    }
-    if (Array.isArray(docs)) {
-      return Object.fromEntries(
-        docs.map((doc: any) => [doc._id.toString(), doc]),
-      ) as Record<string, T>;
-    }
-    return {
-      [docs._id.toString()]: docs,
-    };
-  });
-  return result;
+  toRecords(
+    this: QueryWithHelpers<HydratedDocType[], HydratedDocType>
+  ): QueryWithHelpers<Record<string, HydratedDocType>, HydratedDocType>;
+  /**
+   * Query helpers for transforming query results into a record (object) keyed by document IDs.
+   *
+   * @template RawDocType - The type representing the raw document as returned by MongoDB.
+   * @template HydratedDocType - The type representing the hydrated Mongoose document.
+   *
+   * Provides overloaded `toRecords` methods for use with Mongoose queries, allowing the result
+   * array to be converted into a record where each key is the document's `_id` (as a string)
+   * and the value is the corresponding document.
+   *
+   * @example
+   * // Usage in a Mongoose query:
+   * const records = await Model.find().toRecords();
+   * // records is of type Record<string, RawDocType>
+   */
+  toRecords(
+    this: QueryWithHelpers<RawDocType[], HydratedDocType>
+  ): QueryWithHelpers<Record<string, RawDocType>, HydratedDocType>;
 }
 
 /**
@@ -58,10 +52,23 @@ function toRecords<T extends HydratedDocument<any>>(
  * @param schema The Mongoose schema to extend.
  */
 const toRecordsPlugin = <T extends HydratedDocument<any>>(
-  schema: Schema<any, any, any, ToRecordsQueryHelpers<T>, any, any, any>,
+  schema: Schema<any, any, any, ToRecordsQueryHelpers<ExtractDocType<T>, T>, any, any, any>,
 ) => {
   // eslint-disable-next-line no-param-reassign
-  schema.query.toRecords = toRecords;
+  schema.query.toRecords = function toRecords(this) {
+    const result = this.transform((docs: any) => {
+      if (!docs) {
+        return {};
+      }
+      if (Array.isArray(docs)) {
+        return Object.fromEntries(docs.map((doc: any) => [doc._id.toString(), doc]));
+      }
+      return {
+        [docs._id.toString()]: docs,
+      };
+    });
+    return result;
+  };
 };
 
 export default toRecordsPlugin;

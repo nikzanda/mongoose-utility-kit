@@ -38,25 +38,6 @@ describe('toMap', () => {
     expect(users.get(user._id.toString())!).not.toBeInstanceOf(User);
   });
 
-  it('should correctly handle a single document', async () => {
-    const userFound = await User
-      .findById(user._id)
-      .toMap();
-    expect(userFound).toBeTruthy();
-    expect(userFound.has(user._id.toString())).toBe(true);
-    expect(userFound.get(user._id.toString())!).toBeInstanceOf(User);
-  });
-
-  it('should correctly handle a single document with lean', async () => {
-    const userFound = await User
-      .findById(user._id)
-      .lean()
-      .toMap();
-    expect(userFound).toBeTruthy();
-    expect(userFound.has(user._id.toString())).toBe(true);
-    expect(userFound.get(user._id.toString())!).not.toBeInstanceOf(User);
-  });
-
   it('should return an empty map if no documents are found', async () => {
     const users = await User
       .find({ email: 'non-existent@email.com' })
@@ -82,23 +63,6 @@ describe('toRecords', () => {
       .toRecords();
     expect(users).toBeTruthy();
     expect(users[user._id.toString()]).not.toBeInstanceOf(User);
-  });
-
-  it('should correctly handle a single document', async () => {
-    const userFound = await User
-      .findById(user._id)
-      .toRecords();
-    expect(userFound).toBeTruthy();
-    expect(userFound[user._id.toString()]).toBeInstanceOf(User);
-  });
-
-  it('should correctly handle a single document with lean', async () => {
-    const userFound = await User
-      .findById(user._id)
-      .lean()
-      .toRecords();
-    expect(userFound).toBeTruthy();
-    expect(userFound[user._id.toString()]).not.toBeInstanceOf(User);
   });
 
   it('should return an empty map if no documents are found', async () => {

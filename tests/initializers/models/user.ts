@@ -39,7 +39,8 @@ export type UserHydratedDocument = HydratedDocument<IUser, IUserDocumentOverride
 
 export type UserModelType = Model<
   IUser,
-  ToMapQueryHelpers<UserHydratedDocument> & ToRecordsQueryHelpers<UserHydratedDocument>,
+  ToMapQueryHelpers<IUser, UserHydratedDocument> &
+    ToRecordsQueryHelpers<IUser, UserHydratedDocument>,
   IUserDocumentOverrides,
   IUserVirtuals,
   UserHydratedDocument
