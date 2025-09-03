@@ -1,5 +1,11 @@
 # mongoose-utility-kit
 
+## 0.2.0
+
+### Minor Changes
+
+- 9217086: fixed ToMapQueryHelpers & ToRecordsQueryHelpers interfaces
+
 ## 0.1.0
 
 ### Minor Changes
