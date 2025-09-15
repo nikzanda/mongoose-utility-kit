@@ -1,12 +1,35 @@
 import { HydratedDocument, QueryWithHelpers, Schema } from 'mongoose';
-import { ExtractDocType } from '../types';
+import { ExtractRawDocType, ExtractVirtualsType } from '../types';
 
 /**
  * Interface for query helpers that support converting results to a record (object).
  *
  * @template T The type of the `HydratedDocument`.
  */
-export interface ToRecordsQueryHelpers<RawDocType, HydratedDocType> {
+export interface ToRecordsQueryHelpers<RawDocType, HydratedDocType, TVirtuals> {
+  /**
+   * Query helper for transforming query results into a `Record<string, T>` object,
+   * including virtual properties.
+   *
+   * @template RawDocType - The type representing the raw document as returned by MongoDB.
+   * @template HydratedDocType - The type representing the hydrated Mongoose document.
+   * @template TVirtuals - The type representing virtual properties added to the raw document.
+   *
+   * @remarks
+   * - This overload is used when the query returns documents that include virtuals.
+   * - The result is a plain object (`Record<string, RawDocType & TVirtuals>`) where each key
+   *   corresponds to the document's `_id` (as a string), and the value includes both
+   *   raw fields and virtuals.
+   *
+   * @example
+   * ```ts
+   * const records = await Model.find().toRecords();
+   * // records is of type Record<string, RawDocType & TVirtuals>
+   * ```
+   */
+  toRecords(
+    this: QueryWithHelpers<(RawDocType & TVirtuals)[], HydratedDocType>
+  ): QueryWithHelpers<Record<string, RawDocType & TVirtuals>, HydratedDocType>;
   /**
    * Query helpers for transforming query results into a record (object) keyed by document IDs.
    *
@@ -52,7 +75,17 @@ export interface ToRecordsQueryHelpers<RawDocType, HydratedDocType> {
  * @param schema The Mongoose schema to extend.
  */
 const toRecordsPlugin = <T extends HydratedDocument<any>>(
-  schema: Schema<any, any, any, ToRecordsQueryHelpers<ExtractDocType<T>, T>, any, any, any>,
+  schema: Schema<
+    any,
+    any,
+    any,
+    ToRecordsQueryHelpers<ExtractRawDocType<T>,
+    T,
+    ExtractVirtualsType<T>>,
+    any,
+    any,
+    any
+  >,
 ) => {
   // eslint-disable-next-line no-param-reassign
   schema.query.toRecords = function toRecords(this) {

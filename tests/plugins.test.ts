@@ -1,4 +1,4 @@
-import User, { UserHydratedDocument } from './initializers/models/user';
+import User, { IUser, IUserVirtuals, UserHydratedDocument } from './initializers/models/user';
 
 let user: UserHydratedDocument;
 
@@ -38,6 +38,17 @@ describe('toMap', () => {
     expect(users.get(user._id.toString())!).not.toBeInstanceOf(User);
   });
 
+  it('should return a map with lean documents and virtuals', async () => {
+    const users = await User
+      .find()
+      .lean<(IUser & IUserVirtuals)[]>({ virtuals: true })
+      .toMap();
+    expect(users).toBeTruthy();
+    expect(users.has(user._id.toString())).toBe(true);
+    expect(users.get(user._id.toString())!.fullName).toBeTruthy();
+    expect(users.get(user._id.toString())!).not.toBeInstanceOf(User);
+  });
+
   it('should return an empty map if no documents are found', async () => {
     const users = await User
       .find({ email: 'non-existent@email.com' })
@@ -62,6 +73,16 @@ describe('toRecords', () => {
       .lean()
       .toRecords();
     expect(users).toBeTruthy();
+    expect(users[user._id.toString()]).not.toBeInstanceOf(User);
+  });
+
+  it('should return a map with lean documents and virtuals', async () => {
+    const users = await User
+      .find()
+      .lean<(IUser & IUserVirtuals)[]>({ virtuals: true })
+      .toRecords();
+    expect(users).toBeTruthy();
+    expect(users[user._id.toString()].fullName).toBeTruthy();
     expect(users[user._id.toString()]).not.toBeInstanceOf(User);
   });
 

@@ -1,13 +1,35 @@
 /* eslint-disable max-len */
 import { HydratedDocument, QueryWithHelpers, Schema } from 'mongoose';
-import { ExtractDocType } from '../types';
+import { ExtractRawDocType, ExtractVirtualsType } from '../types';
 
 /**
  * Interface for query helpers that support converting results to a `Map`.
  *
  * @template T The type of the `HydratedDocument`.
  */
-export interface ToMapQueryHelpers<RawDocType, HydratedDocType> {
+export interface ToMapQueryHelpers<RawDocType, HydratedDocType, TVirtuals> {
+  /**
+   * Query helper interface for converting query results into a `Map` keyed by string,
+   * including virtual properties.
+   *
+   * @template RawDocType - The type representing the raw document as returned by MongoDB.
+   * @template HydratedDocType - The type representing the hydrated Mongoose document.
+   * @template TVirtuals - The type representing virtual properties added to the raw document.
+   *
+   * @remarks
+   * - This overload of `toMap` is used when the query returns documents that include virtuals.
+   * - The result is a `Map<string, RawDocType & TVirtuals>`, where the key is typically derived
+   *   from a document property such as `_id`.
+   *
+   * @example
+   * ```typescript
+   * const docsMap = await Model.find().toMap();
+   * // docsMap is a Map<string, RawDocType & TVirtuals>
+   * ```
+   */
+  toMap(
+    this: QueryWithHelpers<(RawDocType & TVirtuals)[], HydratedDocType>
+  ): QueryWithHelpers<Map<string, RawDocType & TVirtuals>, HydratedDocType>;
   /**
    * Query helper interface for converting query results into a `Map` keyed by string.
    *
@@ -55,7 +77,7 @@ export interface ToMapQueryHelpers<RawDocType, HydratedDocType> {
  * @param schema The Mongoose schema to extend.
  */
 const toMapPlugin = <T extends HydratedDocument<any>>(
-  schema: Schema<any, any, any, ToMapQueryHelpers<ExtractDocType<T>, T>, any, any, any>,
+  schema: Schema<any, any, any, ToMapQueryHelpers<ExtractRawDocType<T>, T, ExtractVirtualsType<T>>, any, any, any>,
 ) => {
   // eslint-disable-next-line no-param-reassign
   schema.query.toMap = function (this) {

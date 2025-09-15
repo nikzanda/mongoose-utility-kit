@@ -7,6 +7,7 @@ import {
   HydratedDocument,
   model,
 } from 'mongoose';
+import mongooseLeanVirtuals from 'mongoose-lean-virtuals';
 import addressSchema, { AddressInstance, IAddress } from './embedded/address';
 import {
   toMap,
@@ -30,7 +31,7 @@ interface IUserDocumentOverrides {
   address: AddressInstance;
 }
 
-interface IUserVirtuals {
+export interface IUserVirtuals {
   id: string;
   fullName: string;
 }
@@ -39,8 +40,8 @@ export type UserHydratedDocument = HydratedDocument<IUser, IUserDocumentOverride
 
 export type UserModelType = Model<
   IUser,
-  ToMapQueryHelpers<IUser, UserHydratedDocument> &
-    ToRecordsQueryHelpers<IUser, UserHydratedDocument>,
+  ToMapQueryHelpers<IUser, UserHydratedDocument, IUserVirtuals> &
+    ToRecordsQueryHelpers<IUser, UserHydratedDocument, IUserVirtuals>,
   IUserDocumentOverrides,
   IUserVirtuals,
   UserHydratedDocument
@@ -80,6 +81,7 @@ userSchema.virtual('fullName')
     return `${this.name} ${this.surname}`;
   });
 
+userSchema.plugin(mongooseLeanVirtuals);
 userSchema.plugin(toMap);
 userSchema.plugin(toRecords);
 
