@@ -1,5 +1,11 @@
 # mongoose-utility-kit
 
+## 0.3.0
+
+### Minor Changes
+
+- 794bd55: added overload type of toMap & toRecords to handle virtuals
+
 ## 0.2.0
 
 ### Minor Changes
