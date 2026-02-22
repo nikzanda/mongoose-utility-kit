@@ -7,7 +7,7 @@ import { ExtractRawDocType, ExtractVirtualsType } from '../types';
  *
  * @template T The type of the `HydratedDocument`.
  */
-export interface ToMapQueryHelpers<RawDocType, HydratedDocType, TVirtuals> {
+export interface ToMapQueryHelpers<RawDocType, HydratedDocType, TVirtuals = {}> {
   /**
    * Query helper interface for converting query results into a `Map` keyed by string,
    * including virtual properties.

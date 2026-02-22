@@ -14,16 +14,27 @@ jobs:
   ci:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18, 20, 22, 24]
+        mongoose-version: [8, 9]
+
+    name: Node ${{ matrix.node-version }} / Mongoose ${{ matrix.mongoose-version }}
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ matrix.node-version }}
 
       - name: Install dependencies
         run: yarn
+
+      - name: Install mongoose ${{ matrix.mongoose-version }}
+        run: yarn add --dev mongoose@${{ matrix.mongoose-version }}
 
       - name: Run CI
         run: yarn ci

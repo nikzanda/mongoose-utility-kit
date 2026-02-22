@@ -6,7 +6,7 @@ import { ExtractRawDocType, ExtractVirtualsType } from '../types';
  *
  * @template T The type of the `HydratedDocument`.
  */
-export interface ToRecordsQueryHelpers<RawDocType, HydratedDocType, TVirtuals> {
+export interface ToRecordsQueryHelpers<RawDocType, HydratedDocType, TVirtuals = {}> {
   /**
    * Query helper for transforming query results into a `Record<string, T>` object,
    * including virtual properties.

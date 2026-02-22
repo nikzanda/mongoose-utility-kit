@@ -58,6 +58,11 @@ const userSchema = new Schema<IUser, UserModelType>({
     required: true,
     trim: true,
   },
+  surname: {
+    type: SchemaTypes.String,
+    required: true,
+    trim: true,
+  },
   email: {
     type: SchemaTypes.String,
     required: true,

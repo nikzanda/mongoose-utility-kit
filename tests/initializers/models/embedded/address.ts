@@ -1,8 +1,6 @@
 import {
   HydratedSingleSubdocument,
-  Model,
   Schema,
-  SchemaOptions,
   SchemaTypes,
 } from 'mongoose';
 
@@ -16,13 +14,7 @@ export interface IAddress {
 
 export type AddressInstance = HydratedSingleSubdocument<IAddress>;
 
-type AddressModelType = Model<IAddress, {}, {}, {}, AddressInstance>;
-
-const options: SchemaOptions<IAddress> = {
-  _id: false,
-};
-
-const addressSchema = new Schema<IAddress, AddressModelType>({
+const addressSchema = new Schema<IAddress>({
   streetAddress: {
     type: SchemaTypes.String,
     trim: true,
@@ -43,6 +35,6 @@ const addressSchema = new Schema<IAddress, AddressModelType>({
     type: SchemaTypes.String,
     trim: true,
   },
-}, options);
+}, { _id: false });
 
 export default addressSchema;
