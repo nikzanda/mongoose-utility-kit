@@ -19,6 +19,9 @@ jobs:
       matrix:
         node-version: [18, 20, 22, 24]
         mongoose-version: [8, 9]
+        exclude:
+          - node-version: 18
+            mongoose-version: 9
 
     name: Node ${{ matrix.node-version }} / Mongoose ${{ matrix.mongoose-version }}
 
