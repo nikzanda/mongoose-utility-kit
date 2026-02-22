@@ -1,5 +1,11 @@
 # mongoose-utility-kit
 
+## 0.4.0
+
+### Minor Changes
+
+- 2d3c352: Added new utility functions: isPopulated, ensurePopulated, toObjectId, areIdsEqual.
+
 ## 0.3.0
 
 ### Minor Changes
